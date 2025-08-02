@@ -54,3 +54,4 @@ if st.button("Ejecutar modelo"):
     y_pred = model.predict(X_test)
     report = classification_report(y_test, y_pred, output_dict=True)
     st.dataframe(pd.DataFrame(report).transpose())
+    import ta
