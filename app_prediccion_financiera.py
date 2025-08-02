@@ -38,14 +38,10 @@ if st.button("Ejecutar modelo"):
             else:
                 df['Target'] = (df['Close'].shift(-5) > df['Close']).astype(int)
 
-            # Indicadores técnicos asegurando que sean 1D
-            sma_series = ta.trend.sma_indicator(df['Close'], window=5)
-            momentum_series = ta.momentum.roc(df['Close'], window=5)
-            volatility_series = ta.volatility.bollinger_hband_width(df['Close'], window=5)
-
-            df['SMA'] = pd.Series(sma_series.values, index=df.index)
-            df['Momentum'] = pd.Series(momentum_series.values, index=df.index)
-            df['Volatility'] = pd.Series(volatility_series.values, index=df.index)
+            # Indicadores técnicos con .squeeze() para asegurar dimensión 1D
+            df['SMA'] = ta.trend.sma_indicator(df['Close'], window=5).squeeze()
+            df['Momentum'] = ta.momentum.roc(df['Close'], window=5).squeeze()
+            df['Volatility'] = ta.volatility.bollinger_hband_width(df['Close'], window=5).squeeze()
 
             df.dropna(inplace=True)
 
