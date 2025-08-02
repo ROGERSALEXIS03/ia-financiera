@@ -20,8 +20,13 @@ activo = st.selectbox("Selecciona el activo:",
 horizonte = st.radio("Horizonte de predicción:", ["1 Día", "1 Semana"])
 
 if st.button("Ejecutar modelo"):
-    df = yf.download(activo, start="2020-01-01")
-    df['Return'] = df['Close'].pct_change()
+   df = yf.download(activo, start="2020-01-01")
+
+if df.empty or 'Close' not in df.columns:
+    st.error("❌ Error al descargar los datos. Verifica el nombre del activo.")
+    st.stop()
+
+df['Return'] = df['Close'].pct_change()
 
     if horizonte == "1 Día":
         df['Target'] = (df['Close'].shift(-1) > df['Close']).astype(int)
