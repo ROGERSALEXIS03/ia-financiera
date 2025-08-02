@@ -1,4 +1,4 @@
-
+df = yf.download(ticker, start=start_date, end=end_date)
 import streamlit as st
 import yfinance as yf
 import pandas as pd
