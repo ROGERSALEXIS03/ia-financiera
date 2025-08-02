@@ -39,10 +39,14 @@ if st.button("Ejecutar modelo"):
             else:
                 df['Target'] = (df['Close'].shift(-5) > df['Close']).astype(int)
 
-            # Indicadores técnicos convertidos a 1D
-            df['SMA'] = ta.trend.sma_indicator(df['Close'], window=5).to_numpy().ravel()
-            df['Momentum'] = ta.momentum.roc(df['Close'], window=5).to_numpy().ravel()
-            df['Volatility'] = ta.volatility.bollinger_hband_width(df['Close'], window=5).to_numpy().ravel()
+            # Cálculo de indicadores como vectores 1D
+            sma = ta.trend.sma_indicator(df['Close'], window=5)
+            mom = ta.momentum.roc(df['Close'], window=5)
+            vol = ta.volatility.bollinger_hband_width(df['Close'], window=5)
+
+            df['SMA'] = pd.Series(sma.values.ravel(), index=sma.index)
+            df['Momentum'] = pd.Series(mom.values.ravel(), index=mom.index)
+            df['Volatility'] = pd.Series(vol.values.ravel(), index=vol.index)
 
             df.dropna(inplace=True)
 
