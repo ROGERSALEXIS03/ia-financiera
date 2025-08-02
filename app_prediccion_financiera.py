@@ -8,25 +8,25 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 import ta
 
-st.title("📊 IA para Predicción de Activos Financieros")
+st.title("📈 IA para Predicción de Activos Financieros")
 
-activo = st.selectbox("Selecciona el activo:", 
-    ["Bitcoin (BTC)", "BTC-USD",
-     "Ethereum (ETH)", "ETH-USD",
-     "S&P 500 (SPY)", "SPY",
-     "Oro (Gold)", "GC=F"]
-)
+activo = st.selectbox("Selecciona el activo:", {
+    "Bitcoin (BTC)": "BTC-USD",
+    "Ethereum (ETH)": "ETH-USD",
+    "S&P 500 (SPY)": "SPY",
+    "Oro (Gold)": "GC=F"
+})
 
 horizonte = st.radio("Horizonte de predicción:", ["1 Día", "1 Semana"])
 
 if st.button("Ejecutar modelo"):
-   df = yf.download(activo, start="2020-01-01")
+    df = yf.download(activo, start="2020-01-01")
 
-if df.empty or 'Close' not in df.columns:
-    st.error("❌ Error al descargar los datos. Verifica el nombre del activo.")
-    st.stop()
+    if df.empty or 'Close' not in df.columns:
+        st.error("❌ Error al descargar los datos. Verifica el nombre del activo.")
+        st.stop()
 
-df['Return'] = df['Close'].pct_change()
+    df['Return'] = df['Close'].pct_change()
 
     if horizonte == "1 Día":
         df['Target'] = (df['Close'].shift(-1) > df['Close']).astype(int)
@@ -36,7 +36,8 @@ df['Return'] = df['Close'].pct_change()
     df['SMA'] = ta.trend.sma_indicator(df['Close'], window=5)
     df['Momentum'] = ta.momentum.roc(df['Close'], window=3)
     df['Volatility'] = ta.volatility.bollinger_hband_width(df['Close'], window=5)
-    df = df.dropna()
+
+    df.dropna(inplace=True)
 
     X = df[['SMA', 'Momentum', 'Volatility']]
     y = df['Target']
@@ -52,10 +53,10 @@ df['Return'] = df['Close'].pct_change()
     df['Cumulative Strategy'] = (1 + df['Strategy']).cumprod()
     df['Cumulative Buy & Hold'] = (1 + df['Return']).cumprod()
 
-    st.subheader("📈 Rendimiento Estrategia vs Buy & Hold")
+    st.subheader("📊 Rendimiento Estrategia vs Buy & Hold")
     st.line_chart(df[['Cumulative Strategy', 'Cumulative Buy & Hold']])
 
-    st.subheader("📊 Reporte de clasificación")
+    st.subheader("🧾 Reporte de clasificación")
     y_pred = model.predict(X_test)
     report = classification_report(y_test, y_pred, output_dict=True)
     st.dataframe(pd.DataFrame(report).transpose())
