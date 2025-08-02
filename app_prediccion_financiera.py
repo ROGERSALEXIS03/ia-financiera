@@ -33,23 +33,19 @@ if st.button("Ejecutar modelo"):
         else:
             df['Return'] = df['Close'].pct_change()
 
-            # Variable objetivo
             if horizonte == "1 Día":
                 df['Target'] = (df['Close'].shift(-1) > df['Close']).astype(int)
             else:
                 df['Target'] = (df['Close'].shift(-5) > df['Close']).astype(int)
 
-            # Cálculo de indicadores como vectores 1D
-            sma = ta.trend.sma_indicator(df['Close'], window=5)
-            mom = ta.momentum.roc(df['Close'], window=5)
-            vol = ta.volatility.bollinger_hband_width(df['Close'], window=5)
-
-            df['SMA'] = pd.Series(sma.values.ravel(), index=sma.index)
-            df['Momentum'] = pd.Series(mom.values.ravel(), index=mom.index)
-            df['Volatility'] = pd.Series(vol.values.ravel(), index=vol.index)
+            # Asegurar indicadores como Series 1D
+            df['SMA'] = ta.trend.sma_indicator(df['Close'], window=5).astype(float)
+            df['Momentum'] = ta.momentum.roc(df['Close'], window=5).astype(float)
+            df['Volatility'] = ta.volatility.bollinger_hband_width(df['Close'], window=5).astype(float)
 
             df.dropna(inplace=True)
 
+            # Entrenamiento
             X = df[['SMA', 'Momentum', 'Volatility']]
             y = df['Target']
 
