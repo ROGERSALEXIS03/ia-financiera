@@ -33,15 +33,16 @@ if st.button("Ejecutar modelo"):
         else:
             df['Return'] = df['Close'].pct_change()
 
+            # Variable objetivo
             if horizonte == "1 Día":
                 df['Target'] = (df['Close'].shift(-1) > df['Close']).astype(int)
             else:
                 df['Target'] = (df['Close'].shift(-5) > df['Close']).astype(int)
 
-            # Indicadores técnicos con .squeeze() para asegurar dimensión 1D
-            df['SMA'] = ta.trend.sma_indicator(df['Close'], window=5).squeeze()
-            df['Momentum'] = ta.momentum.roc(df['Close'], window=5).squeeze()
-            df['Volatility'] = ta.volatility.bollinger_hband_width(df['Close'], window=5).squeeze()
+            # Indicadores técnicos convertidos a 1D
+            df['SMA'] = ta.trend.sma_indicator(df['Close'], window=5).to_numpy().ravel()
+            df['Momentum'] = ta.momentum.roc(df['Close'], window=5).to_numpy().ravel()
+            df['Volatility'] = ta.volatility.bollinger_hband_width(df['Close'], window=5).to_numpy().ravel()
 
             df.dropna(inplace=True)
 
