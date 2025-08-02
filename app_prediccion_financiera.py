@@ -2,6 +2,7 @@ df = yf.download(ticker, start=start_date, end=end_date)
 import streamlit as st
 import yfinance as yf
 import pandas as pd
+import ta
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
@@ -54,4 +55,3 @@ if st.button("Ejecutar modelo"):
     y_pred = model.predict(X_test)
     report = classification_report(y_test, y_pred, output_dict=True)
     st.dataframe(pd.DataFrame(report).transpose())
-    import ta
